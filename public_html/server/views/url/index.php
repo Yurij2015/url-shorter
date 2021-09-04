@@ -23,14 +23,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'idurl',
-            'url:url',
-            'shorter_url:url',
+//            'idurl',
+//            'url:url',
+            'url',
+//            'shorter_url:url',
             'redirect_limit',
-            'shorter_url_lifetime:datetime',
-            //'time_create',
+            'shorter_url_lifetime',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Ссылка',
+                'format' => 'raw',
+                'value' => function ($data) {
+                    return Html::a(
+                         'localhost/' . $data->shorter_url,
+                        [
+                            'url/view-url',
+                            'shorter_url' => $data->shorter_url,
+                        ]
+                    );
+                }
+            ],
+//            'shorter_url_lifetime:datetime',
+            //'time_create',
+            ['class' => 'yii\grid\ActionColumn', 'template'=>'{view}'],
         ],
     ]); ?>
 

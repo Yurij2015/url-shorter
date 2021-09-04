@@ -59,14 +59,14 @@ class UrlController extends Controller
 
     /**
      * Displays a single Url model.
-     * @param int $idurl Idurl
+     * @param int $id Id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($idurl)
+    public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($idurl),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -92,44 +92,11 @@ class UrlController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Url model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $idurl Idurl
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($idurl)
-    {
-        $model = $this->findModel($idurl);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'idurl' => $model->idurl]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Url model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $idurl Idurl
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($idurl)
-    {
-        $this->findModel($idurl)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
+   /**
      * Finds the Url model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $idurl Idurl
+     * @param int $id Id
      * @return Url the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */

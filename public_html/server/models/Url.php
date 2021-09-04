@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\AttributeBehavior;
+use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 
 /**
  * This is the model class for table "url".
@@ -18,6 +21,7 @@ use Yii;
  */
 class Url extends \yii\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
@@ -26,18 +30,32 @@ class Url extends \yii\db\ActiveRecord
         return 'url';
     }
 
+
+    public function token(): string
+    {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $input_length = strlen($chars);
+        $random_string = '';
+        for ($i = 0; $i < 8; $i++) {
+            $random_character = $chars[mt_rand(0, $input_length - 1)];
+            $random_string .= $random_character;
+        }
+        return $random_string;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['url', 'shorter_url', 'redirect_limit', 'shorter_url_lifetime'], 'required'],
+            [['url', 'redirect_limit', 'shorter_url_lifetime'], 'required'],
             [['redirect_limit', 'shorter_url_lifetime'], 'integer'],
             [['time_create'], 'safe'],
             [['url'], 'string', 'max' => 145],
             [['shorter_url'], 'string', 'max' => 8],
             [['shorter_url'], 'unique'],
+            [['shorter_url'], 'default', 'value' => $this->token()],
         ];
     }
 
