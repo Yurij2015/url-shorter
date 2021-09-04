@@ -70,6 +70,13 @@ class UrlController extends Controller
         ]);
     }
 
+    public function actionViewUrl($shorter_url)
+    {
+        $short_url = Url::findOne(['shorter_url' => $shorter_url]);
+
+        return $this->redirect($short_url['url']);
+    }
+
     /**
      * Creates a new Url model.
      * If creation is successful, the browser will be redirected to the 'view' page.
