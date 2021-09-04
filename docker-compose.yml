@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  webserver_url_shorter:
+    image: yiisoftware/yii2-php:7.4-apache
+    volumes:
+      - ${PROJECT_ROOT}/server/:/app:delegated
+    ports:
+      - '80:80'
+    networks:
+      - backend
+    depends_on:
+      - mysql_url_shorter
+    container_name: webserver_url_shorter
+  mysql_url_shorter:
+    image: mysql:${MYSQL_VERSION}
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_url_shorter
+    networks:
+      - backend
+    container_name: mysql_url_shorter
+  phpmyadmin_url_shorter:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_url_shorter
+    ports:
+      - "2323:80"
+    links:
+      - mysql_url_shorter:db
+    networks:
+      - backend
+networks:
+  backend:
+volumes:
+  data:
