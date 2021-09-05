@@ -78,14 +78,12 @@ class UrlController extends Controller
             ->where(['url_idurl' => $short_url['idurl']])
             ->count();
 
-        if ($transition_count >= $short_url['redirect_limit']) {
+        if ($transition_count >= $short_url['redirect_limit'] && $short_url['redirect_limit'] !== 0) {
             return $this->render('404');
         }
 
-        $url_life =  strtotime(date("Y-m-d H:i:s")) - strtotime($short_url['time_create']);
-        $url_life = $url_life/3600;
-
-
+        $url_life = strtotime(date("Y-m-d H:i:s")) - strtotime($short_url['time_create']);
+        $url_life = $url_life / 3600;
         if ($url_life > $short_url['shorter_url_lifetime']) {
             return $this->render('404');
         }

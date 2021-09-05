@@ -63,7 +63,7 @@ class Url extends \yii\db\ActiveRecord
 
     public function LifeTimeFormat($attribute)
     {
-        if (!preg_match('/^[0-9]{24}$/', $this->$attribute)) {
+        if (!preg_match('/^(\d|1\d|2[0-4])(\.\d{1,2})?$/', $this->$attribute)) {
             $this->addError($attribute, 'Please provide values only no more than 24.');
         }
     }
