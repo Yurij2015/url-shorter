@@ -12,15 +12,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'url')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'shorter_url')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'url')->textInput() ?>
 
     <?= $form->field($model, 'redirect_limit')->textInput() ?>
 
-    <?= $form->field($model, 'shorter_url_lifetime')->textInput() ?>
-
-    <?= $form->field($model, 'time_create')->textInput() ?>
+    <?= $form->field($model, 'shorter_url_lifetime')->textInput(['type' => 'number' ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

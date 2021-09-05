@@ -74,6 +74,27 @@ class UrlController extends Controller
     {
         $short_url = Url::findOne(['shorter_url' => $shorter_url]);
 
+        $transition_count = UrlTransitions::find()
+            ->where(['url_idurl' => $short_url['idurl']])
+            ->count();
+
+        if ($transition_count >= $short_url['redirect_limit']) {
+            return $this->render('404');
+        }
+
+        $url_life =  strtotime(date("Y-m-d H:i:s")) - strtotime($short_url['time_create']);
+        $url_life = $url_life/3600;
+
+
+        if ($url_life > $short_url['shorter_url_lifetime']) {
+            return $this->render('404');
+        }
+
+        $transition = new UrlTransitions();
+        $transition->url_idurl = $short_url['idurl'];
+        $transition->entry_time = date("Y-m-d H:i:s");;
+        $transition->save();
+
         return $this->redirect($short_url['url']);
     }
 
@@ -88,7 +109,7 @@ class UrlController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'idurl' => $model->idurl]);
+                return $this->redirect(['view', 'id' => $model->idurl]);
             }
         } else {
             $model->loadDefaultValues();
@@ -100,7 +121,7 @@ class UrlController extends Controller
     }
 
 
-   /**
+    /**
      * Finds the Url model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id Id

@@ -2,11 +2,12 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Url */
 
-$this->title = $model->idurl;
+$this->title = $model->url;
 $this->params['breadcrumbs'][] = ['label' => 'Urls', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -31,9 +32,25 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'idurl',
             'url:url',
-            'shorter_url:url',
+//            'shorter_url:url',
+            [
+                'label' => 'Shorter Url',
+                'format' => 'raw',
+                'value' => function ($data) {
+                    return Html::a(
+                        Url::to(['url/view-url', 'shorter_url' => $data->shorter_url]),
+//                        'localhost/' . $data->shorter_url,
+                        [
+                            'url/view-url',
+                            'shorter_url' => $data->shorter_url,
+                        ]
+//                        [$data->shorter_url,]
+                    );
+                }
+            ],
+
             'redirect_limit',
-            'shorter_url_lifetime:datetime',
+            'shorter_url_lifetime',
             'time_create',
         ],
     ]) ?>

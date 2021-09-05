@@ -51,12 +51,21 @@ class Url extends \yii\db\ActiveRecord
         return [
             [['url', 'redirect_limit', 'shorter_url_lifetime'], 'required'],
             [['redirect_limit', 'shorter_url_lifetime'], 'integer'],
+            [['shorter_url_lifetime'], 'LifeTimeFormat'],
             [['time_create'], 'safe'],
+            [['time_create'], 'default', 'value' => date("Y-m-d H:i:s")],
             [['url'], 'string', 'max' => 145],
             [['shorter_url'], 'string', 'max' => 8],
             [['shorter_url'], 'unique'],
             [['shorter_url'], 'default', 'value' => $this->token()],
         ];
+    }
+
+    public function LifeTimeFormat($attribute)
+    {
+        if (!preg_match('/^[0-9]{24}$/', $this->$attribute)) {
+            $this->addError($attribute, 'Please provide values only no more than 24.');
+        }
     }
 
     /**

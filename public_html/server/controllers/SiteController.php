@@ -2,127 +2,122 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
+use app\models\Url;
+use app\models\UrlTransitions;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
-use yii\web\Response;
+use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 
+/**
+ * UrlController implements the CRUD actions for Url model.
+ */
 class SiteController extends Controller
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
                     ],
                 ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+            ]
+        );
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
-    }
-
-    /**
-     * Displays homepage.
-     *
-     * @return string
+     * Lists all Url models.
+     * @return mixed
      */
     public function actionIndex()
     {
-        return $this->render('index');
-    }
+        $dataProvider = new ActiveDataProvider([
+            'query' => Url::find(),
+            /*
+            'pagination' => [
+                'pageSize' => 50
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'idurl' => SORT_DESC,
+                ]
+            ],
+            */
+        ]);
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Logout action.
-     *
-     * @return Response
+     * Displays a single Url model.
+     * @param int $id Id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionLogout()
+    public function actionView($id)
     {
-        Yii::$app->user->logout();
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
 
-        return $this->goHome();
+    public function actionViewUrl($shorter_url)
+    {
+        $short_url = Url::findOne(['shorter_url' => $shorter_url]);
+
+        $transition = new UrlTransitions();
+        $transition->url_idurl = $short_url['idurl'];
+        $transition->entry_time = date("Y-m-d H:i:s");;
+        $transition->save();
+
+        return $this->redirect($short_url['url']);
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return Response|string
+     * Creates a new Url model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
      */
-    public function actionContact()
+    public function actionCreate()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
+        $model = new Url();
 
-            return $this->refresh();
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'idurl' => $model->idurl]);
+            }
+        } else {
+            $model->loadDefaultValues();
         }
-        return $this->render('contact', [
+
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
+
     /**
-     * Displays about page.
-     *
-     * @return string
+     * Finds the Url model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param int $id Id
+     * @return Url the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionAbout()
+    protected function findModel($idurl)
     {
-        return $this->render('about');
+        if (($model = Url::findOne($idurl)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

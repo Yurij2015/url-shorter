@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -9,6 +10,8 @@ use yii\grid\GridView;
 $this->title = 'Urls';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+
 <div class="url-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -31,21 +34,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'shorter_url_lifetime',
 
             [
-                'label' => 'Ссылка',
+                'label' => 'Shorter Url',
                 'format' => 'raw',
                 'value' => function ($data) {
                     return Html::a(
-                         'localhost/' . $data->shorter_url,
+                        Url::to(['url/view-url', 'shorter_url' => $data->shorter_url]),
+//                        'localhost/' . $data->shorter_url,
                         [
                             'url/view-url',
                             'shorter_url' => $data->shorter_url,
                         ]
+//                        [$data->shorter_url,]
                     );
                 }
             ],
 //            'shorter_url_lifetime:datetime',
             //'time_create',
-            ['class' => 'yii\grid\ActionColumn', 'template'=>'{view}'],
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'],
         ],
     ]); ?>
 
